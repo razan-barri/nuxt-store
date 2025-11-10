@@ -1,0 +1,22 @@
+/* app/assets/main.css */
+
+/* 1. إعادة تعيين التنسيقات (ضروري لأي مشروع) */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2. تطبيق الخط الافتراضي على كامل الجسم */
+body {
+  font-family: 'Tajawal', sans-serif; /* يفترض أنك تستخدم هذا الخط */
+  color: #333;
+  background-color: #f7f7f7;
+  min-height: 100vh;
+}
+
+/* 3. تنسيق عام للروابط */
+a {
+  text-decoration: none;
+  color: #10b981;
+}
