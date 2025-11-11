@@ -1,9 +1,9 @@
-// nuxt.config.ts (النسخة النظيفة)
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // إزالة إعدادات NITRO الخاطئة (لا يوجد شيء هنا)
-
+  // 🧩 ربط ملف التنسيقات الأساسي
   css: ['@/assets/main.css'],
 
+  // ⚙️ إعدادات عامة للمشروع
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 });
