@@ -1,11 +1,9 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
-  // 🧩 ربط ملف التنسيقات
   css: ['@/assets/main.css'],
 
-  // ⚙️ تفعيل nitro على Node runtime (وليس Edge)
   nitro: {
-    preset: 'vercel',
+    preset: 'vercel', // ✅ خليه يستخدم الإعداد المدمج في Nuxt لـ Vercel
     serveStatic: true,
   },
 
