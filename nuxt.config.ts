@@ -1,9 +1,13 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// nuxt.config.ts
 export default defineNuxtConfig({
-  // 🧩 ربط ملف التنسيقات الأساسي
+  // 🧩 ملف التنسيقات الأساسي
   css: ['@/assets/main.css'],
 
-  // ⚙️ إعدادات عامة للمشروع
+  // ⚙️ إعداد Nitro لاستخدام بيئة Node بدل Edge
+  nitro: {
+    preset: 'node-server', // ✅ يجبر Vercel تستخدم Node runtime
+  },
+
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 });
