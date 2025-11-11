@@ -1,132 +1,21 @@
-<!-- <script setup>
-const {
-  data: products,
-
-  pending,
-
-  error,
-} = await useFetch('https://fakestoreapi.com/products');
-</script>
-
-<template>
-  <div>
-    <h1>🛒 قائمة المنتجات</h1>
-
-    <div v-if="pending">جاري التحميل...</div>
-
-    <div v-else-if="error">تعذر جلب المنتجات 😢</div>
-
-    <ul v-else>
-      <li v-for="item in products" :key="item.id">
-        <NuxtLink :to="`/products/${item.id}`">
-          {{ item.title }} - {{ item.price }} ريال
-        </NuxtLink>
-      </li>
-    </ul>
-  </div>
-</template> -->
-
-<!-- -------------------- هنا لة ابغى استخدم البيسك بوتن ------------------------------------- -->
-
-<!-- <script setup>
-
-// يمكنك استخدام useFetch مباشرة في setup
-
-const {
-
-  data: products,
-
-  pending,
-
-  error,
-
-} = await useFetch('https://fakestoreapi.com/products');
-
-
-
-// دالة لمعالجة النقر على الزر الجديد
-
-const handleExploreClick = () => {
-
-  alert('جارٍ استكشاف المزيد من المنتجات...');
-
-};
-
-</script>
-
-
-
-<template>
-
-   
-
-  <div>
-
-       
-
-    <h1>🛒 قائمة المنتجات</h1>
-
-
-
-       
-
-    <div v-if="pending">جاري التحميل...</div>
-
-       
-
-    <div v-else-if="error">تعذر جلب المنتجات 😢</div>
-
-
-
-       
-
-    <ul v-else>
-
-           
-
-      <li v-for="item in products" :key="item.id">
-
-               
-
-        <NuxtLink :to="`/products/${item.id}`">
-
-                    {{ item.title }} - {{ item.price }} ريال        
-
-        </NuxtLink>
-
-             
-
-      </li>
-
-         
-
-    </ul>
-
-
-
-    <div style="text-align: center; margin-top: 20px">
-
-      <UiBaseButton @click="handleExploreClick" variant="primary">
-
-        استكشف المزيد
-
-      </UiBaseButton>
-
-    </div>
-
-     
-
-  </div>
-
-</template> -->
-
 <template>
   <div class="products-page">
     <h1>🛍️ قائمة المنتجات</h1>
 
+    <!-- 🔸 أثناء التحميل -->
     <div v-if="pending" class="loading">جاري تحميل المنتجات...</div>
+
+    <!-- 🔸 لو فشل الجلب -->
     <div v-else-if="error" class="error">تعذر تحميل المنتجات 😢</div>
 
+    <!-- 🔸 لو في رسالة خطأ من الـ API -->
+    <div v-else-if="products?.error">
+      <p style="color: red; font-weight: 600">
+        ⚠️ خطأ من السيرفر: {{ products.error }}
+      </p>
+    </div>
+
+    <!-- 🔸 عرض المنتجات -->
     <div v-else class="products-grid">
       <div v-for="product in products" :key="product.id" class="product-card">
         <img :src="product.image" :alt="product.title" />
@@ -144,6 +33,7 @@ const handleExploreClick = () => {
 </template>
 
 <script setup>
+// 🔹 جلب المنتجات من الـ API الداخلي
 const { data: products, pending, error } = await useFetch('/api/products');
 </script>
 
