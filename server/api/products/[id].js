@@ -1,17 +1,6 @@
 // server/api/products/[id].js
 import { getRouterParam, createError, defineEventHandler } from 'h3';
 
-// ------------------- (1) مصدر بيانات داخلي ثابت (لغرض الدمج) -------------------
-// في الواقع، يمكن أن تكون هذه البيانات قادمة من قاعدة بياناتك الداخلية
-const internalRatings = {
-  // تقييمات داخلية وهمية
-  1: { rating: 4.5, reviewCount: 150 },
-  2: { rating: 4.0, reviewCount: 88 },
-  3: { rating: 4.8, reviewCount: 210 },
-  // والمزيد...
-};
-// -----------------------------------------------------------------------------------
-
 export default defineEventHandler(async (event) => {
   const productId = getRouterParam(event, 'id');
 
@@ -22,30 +11,31 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  // A. الجلب من الـ API الخارجي
-  const externalProduct = await $fetch(
-    `https://fakestoreapi.com/products/${productId}`,
-  );
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 ثانية مهلة
 
-  // B. الحصول على البيانات من المصدر الداخلي
-  const internalData = internalRatings[productId] || {
-    rating: 3.5,
-    reviewCount: 5,
-  };
+  try {
+    // جلب المنتج من الـ API الخارجي مع تطبيق المهلة
+    const externalProduct = await fetch(
+      `https://fakestoreapi.com/products/${productId}`,
+      {
+        signal: controller.signal, // تطبيق المهلة
+      },
+    );
 
-  // C. الدمج الحقيقي! (Combining)
-  const combinedProduct = {
-    // البيانات الأساسية من API الخارجي
-    ...externalProduct,
+    clearTimeout(timeoutId); // إلغاء المهلة عند النجاح
 
-    // إضافة العملة (معالجة)
-    currency: 'ريال',
+    if (!externalProduct.ok) {
+      throw new Error(`External API failed: ${externalProduct.statusText}`);
+    }
 
-    // دمج البيانات الداخلية الجديدة (Ratings)
-    internal_rating: internalData.rating,
-    internal_reviews: internalData.reviewCount,
-  };
-
-  // إرجاع المنتج المدمج من المصدرين
-  return combinedProduct;
+    const productJson = await externalProduct.json();
+    return productJson;
+  } catch (error) {
+    clearTimeout(timeoutId); // إلغاء المهلة عند الفشل
+    throw createError({
+      statusCode: 503,
+      statusMessage: `Failed to fetch product ${productId}: ${error.message}`,
+    });
+  }
 });
