@@ -2,20 +2,26 @@
 
 export default defineEventHandler(async () => {
   try {
-    // 🟢 استخدام API بديل مجاني ومفتوح
     const response = await fetch('https://dummyjson.com/products', {
-      cache: 'no-store', // منع التخزين المؤقت
+      cache: 'no-store',
     });
 
-    // 🔸 التأكد من نجاح الجلب
     if (!response.ok) {
       throw new Error(`فشل الاتصال: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
 
-    // 🔸 dummyjson يرجّع كائن فيه key اسمه "products"
-    return data.products;
+    // 🔹 تحويل شكل البيانات لتطابق الشكل القديم (image/title/price/description)
+    const products = data.products.map((item) => ({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      image: item.thumbnail, // 🟢 بدل image
+      description: item.description, // 🟢 للوصف
+    }));
+
+    return products;
   } catch (error) {
     console.error('❌ خطأ أثناء الجلب:', error);
     return { error: error.message || 'حدث خطأ غير معروف' };
