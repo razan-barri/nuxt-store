@@ -2,7 +2,7 @@
   <div class="site-container">
     <SharedAppHeader />
 
-    <main class="page-content">
+    <main class="page-content" :class="{ 'full-width': $route.path === '/' }">
       <slot />
     </main>
 
@@ -19,12 +19,14 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 .page-content {
-  flex-grow: 1; /* يجعل المحتوى يملأ الفراغ لدفع الفوتر للأسفل */
-  padding: 20px 0;
-  width: 90%;
-  max-width: 1200px;
-  margin: 0 auto; /* توسيط المحتوى */
+  flex-grow: 1;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
 }
 </style>

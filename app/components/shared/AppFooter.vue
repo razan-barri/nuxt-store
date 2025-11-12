@@ -27,44 +27,83 @@
 
 <style scoped>
 .main-footer {
-  background-color: #2c3e50; /* لون داكن */
-  color: #ecf0f1; /* نص فاتح */
-  padding: 30px 50px 15px;
-  border-top: 5px solid #10b981;
+  position: relative;
   width: 100%;
-  height: 100%;
+  padding: 40px 60px 20px;
+  color: #f5f5f5;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -2px 10px rgba(76, 0, 255, 0.2);
+  overflow: hidden;
 }
+
+/* ✨ تأثير لمعة متحركة خفيفة في الخلفية */
+.main-footer::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle at center,
+    rgba(76, 0, 255, 0.08),
+    transparent 60%
+  );
+  animation: footerGlow 12s linear infinite;
+}
+@keyframes footerGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ✅ المحتوى الداخلي */
 .footer-content {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
   padding-bottom: 20px;
-  border-bottom: 1px solid #4a637d;
+  position: relative;
+  z-index: 2;
 }
-.footer-section {
-  margin: 15px;
-  min-width: 200px;
-}
+
+/* ✴️ العناوين */
 .footer-section h3 {
-  color: #10b981;
-  margin-bottom: 15px;
+  background: linear-gradient(90deg, #00c3ff, #ff00e4, #4c00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
   font-size: 1.2rem;
+  margin-bottom: 15px;
 }
+
+/* 🔗 الروابط والنصوص */
 .footer-link,
 .footer-section p {
   display: block;
-  color: #bdc3c7;
+  color: #cfcfcf;
   text-decoration: none;
   margin-bottom: 8px;
-  transition: color 0.2s;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
 }
 .footer-link:hover {
-  color: #ffffff;
+  color: #ff00e4;
+  text-shadow: 0 0 10px #ff00e4;
 }
+
+/* ⚡ النص السفلي */
 .copyright {
   text-align: center;
-  margin-top: 15px;
+  margin-top: 20px;
   font-size: 0.9rem;
-  color: #95a5a6;
+  color: #999;
+  z-index: 2;
+  position: relative;
 }
 </style>

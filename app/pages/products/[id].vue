@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useProduct } from '~/composables/useProduct';
 import { useCart } from '~/composables/useCart';
 
@@ -13,14 +13,38 @@ const finalPriceWithVAT = computed(() => {
 const addToCartHandler = () => {
   if (!product.value) return;
   addToCart(product.value);
-  // 🚫 لا نستخدم alert هنا — فقط نضيف المنتج بهدوء
 };
+
+/* ✨ حركة الإضاءة في الخلفية */
+onMounted(() => {
+  const blobs = document.querySelectorAll('.blob');
+  blobs.forEach((blob) => {
+    blob.animate(
+      [
+        { transform: 'translate(0, 0) scale(1)' },
+        { transform: 'translate(60px, -60px) scale(1.2)' },
+        { transform: 'translate(-40px, 60px) scale(0.9)' },
+        { transform: 'translate(0, 0) scale(1)' },
+      ],
+      {
+        duration: 15000,
+        iterations: Infinity,
+        direction: 'alternate',
+      },
+    );
+  });
+});
 </script>
 
 <template>
-  <div class="product-page">
-    <div v-if="loading" class="loading">جاري تحميل البيانات...</div>
-    <div v-else-if="fetchError" class="error">حدث خطأ أثناء جلب المنتج 😢</div>
+  <main class="product-page">
+    <!-- 🪩 خلفية الإضاءة -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div v-if="loading" class="loading">Loading product...</div>
+    <div v-else-if="fetchError" class="error">❌ Failed to load product</div>
 
     <div v-else class="product-card">
       <img :src="product?.image" :alt="product?.title" class="product-image" />
@@ -29,149 +53,210 @@ const addToCartHandler = () => {
         <h1>{{ product?.title }}</h1>
         <p class="desc">{{ product?.description }}</p>
 
-        <p class="price-original">
-          السعر الأصلي: {{ $formatCurrency(product?.price) }}
-        </p>
-        <p class="price-vat">
-          الإجمالي (شامل الضريبة): {{ $formatCurrency(finalPriceWithVAT) }}
-        </p>
+        <div class="price-section">
+          <p class="price-original">
+            Original Price:
+            <span class="value">${{ product?.price }}</span>
+          </p>
+          <p class="price-vat">
+            With VAT:
+            <span class="value">${{ finalPriceWithVAT.toFixed(2) }}</span>
+          </p>
+        </div>
 
         <div class="rating-info">
           <span>⭐ {{ product?.internal_rating }}</span>
-          <span>({{ product?.internal_reviews }} مراجعة)</span>
+          <span>({{ product?.internal_reviews }} Reviews)</span>
         </div>
 
-        <!-- 🎨 الزرين هنا بجانب بعض -->
         <div class="buttons-row">
-          <UiBaseButton
-            variant="primary"
-            class="add-btn"
-            @click="addToCartHandler"
-          >
-            🛒 أضف إلى السلة
-          </UiBaseButton>
-
-          <NuxtLink to="/cart" class="go-cart-btn"> عرض السلة → </NuxtLink>
+          <button class="add-btn" @click="addToCartHandler">
+            🛒 Add to Cart
+          </button>
+          <NuxtLink to="/cart" class="go-cart-btn">Go to Cart →</NuxtLink>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
+/* ✨ خلفية الموقع */
 .product-page {
+  position: relative;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 40px;
-  background-color: #fafafa;
-  min-height: 100vh;
-  direction: rtl;
-  font-family: 'Tajawal', sans-serif;
+  padding: 60px 20px;
+  font-family: 'Poppins', sans-serif;
+  color: #fff;
+  background: #0d0d0d;
+  overflow: hidden;
 }
 
+/* 🪩 الخلفيات المتوهجة */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.6;
+  z-index: 0;
+}
+.blob1 {
+  width: 500px;
+  height: 500px;
+  background: #4c00ff;
+  top: -100px;
+  left: -100px;
+}
+.blob2 {
+  width: 400px;
+  height: 400px;
+  background: #ff00e4;
+  bottom: -100px;
+  right: -100px;
+}
+.blob3 {
+  width: 350px;
+  height: 350px;
+  background: #00c3ff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ✨ البطاقة */
 .product-card {
+  position: relative;
   display: flex;
+  flex-wrap: wrap;
   gap: 40px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 25px;
   padding: 40px;
-  max-width: 900px;
+  max-width: 950px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 25px rgba(255, 0, 228, 0.2);
+  z-index: 2;
+  transition: all 0.4s ease;
+}
+.product-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 40px rgba(0, 195, 255, 0.3);
 }
 
+/* ✨ الصورة */
 .product-image {
-  width: 280px;
-  height: auto;
-  border-radius: 12px;
+  width: 320px;
+  height: 320px;
+  border-radius: 20px;
   object-fit: contain;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 15px;
+  box-shadow: 0 0 25px rgba(76, 0, 255, 0.3);
+  transition: transform 0.3s ease;
+}
+.product-image:hover {
+  transform: scale(1.05) rotate(1deg);
 }
 
+/* ✨ النصوص */
 .product-info {
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
-
 h1 {
-  margin: 0;
-  color: #222;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 10px #4c00ff, 0 0 20px #00c3ff;
+  margin-bottom: 10px;
 }
-
 .desc {
-  color: #555;
-  line-height: 1.7;
-  font-size: 15px;
+  color: #ddd;
+  line-height: 1.8;
+  font-size: 1rem;
   margin-top: 10px;
+  max-width: 600px;
 }
-
-.price-original {
-  color: #777;
-  font-weight: 400;
-  font-size: 15px;
+.price-section {
   margin-top: 20px;
 }
-
+.price-original,
 .price-vat {
-  color: #1e8449;
   font-weight: 600;
-  font-size: 18px;
-  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.value {
+  color: #00c3ff;
+  font-weight: 700;
+}
+.price-vat .value {
+  color: #ff00e4;
 }
 
+/* ✨ التقييم */
 .rating-info {
-  margin-top: 10px;
-  color: #f1c40f;
+  margin-top: 15px;
+  color: #ffdc64;
   font-weight: 600;
-  font-size: 14px;
   display: flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
 }
 
-/* 🎨 تنسيق الأزرار بجانب بعض */
+/* ✨ الأزرار */
 .buttons-row {
   display: flex;
   gap: 15px;
-  margin-top: 25px;
-  align-items: center;
+  margin-top: 30px;
 }
-
 .add-btn {
   flex: 1;
-  background-color: #10b981;
-  color: white;
-  font-size: 15px;
-  padding: 12px;
-  border-radius: 10px;
+  background: linear-gradient(90deg, #4c00ff, #ff00e4, #00c3ff);
+  background-size: 200%;
+  color: #fff;
+  font-weight: 700;
   border: none;
-  transition: background 0.2s;
+  border-radius: 30px;
+  padding: 12px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255, 0, 228, 0.3);
+  transition: all 0.4s ease;
+  animation: gradientShift 4s linear infinite;
 }
 .add-btn:hover {
-  background-color: #059669;
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(0, 195, 255, 0.7);
 }
-
 .go-cart-btn {
   flex: 1;
   text-align: center;
-  background-color: #3b82f6;
-  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
   padding: 12px;
-  border-radius: 10px;
-  text-decoration: none;
+  border-radius: 30px;
   font-weight: 600;
-  transition: background 0.2s;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
 }
 .go-cart-btn:hover {
-  background-color: #2563eb;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
-.loading,
-.error {
-  font-size: 20px;
-  color: #555;
+/* ✨ Animations */
+@keyframes gradientShift {
+  0% {
+    background-position: 0%;
+  }
+  100% {
+    background-position: 200%;
+  }
 }
 </style>
